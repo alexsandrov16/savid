@@ -39,14 +39,6 @@ class DBManager:
             results = cursor.fetchall()
             # Convertir los resultados a una lista de diccionarios
             return [dict(zip(columns, row)) for row in results]
-
-
-
-            #cursor = self.connection.cursor()
-            #cursor.execute(query)
-           # results = cursor.fetchall()
-            # Convertir los resultados a una lista de diccionarios
-            #return [dict(zip(columns, row)) for row in results]
         except Exception as e:
             logging.error(f"Error: {e}")
             raise
