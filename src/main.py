@@ -4,8 +4,6 @@ from outlook import sendMailData
 from database import DBManager
 from datetime import datetime
 
-
-
 def main(page:ft.Page):
     page.title = f"{config.app('name')} v{config.app('version')}"
     page.window.min_height=640
@@ -370,4 +368,8 @@ def main(page:ft.Page):
     )
 
 
-ft.app(main)
+if __name__ == '__main__':
+    # Busca e inserta los datos al inicializarce
+    sendMailData()
+
+    ft.app(main)
