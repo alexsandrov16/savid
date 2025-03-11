@@ -54,12 +54,12 @@ class OutlookClient:
                 # Iterar sobre los correos del buzón
                 for message in folder.Items:
 
-                    if hasattr(message, 'ReceivedTime')==True:
-                        convert_time = datetime(*message.ReceivedTime.timetuple()[:6])
-                    else:
-                        logging.error(f"Propiedad 'ReceivedTime' indefinida en el objeto OutlookMessage")
+                    #if hasattr(message, 'ReceivedTime')==True:
+                    #else:
+                    #    logging.error(f"Propiedad 'ReceivedTime' indefinida en el objeto OutlookMessage")
 
                     try:
+                        convert_time = datetime(*message.ReceivedTime.timetuple()[:6])
                         if message.Subject == subject and convert_time > fecha_correo:
                             # Expresión regular para extraer la información deseada
                             regex = r"En fecha (\d{2}/\d{2}/\d{4}) (.+?) ha realizado una transferencia desde su cuenta (\d{16}) hacia la cuenta (\d{16}) por un importe de ([\d,.]+) con referencia (BR\w+)"
