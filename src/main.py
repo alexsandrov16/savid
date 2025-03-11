@@ -12,48 +12,105 @@ def main(page:ft.Page):
     page.theme = ft.Theme(color_scheme_seed=ft.Colors.GREEN)
     page.theme_mode=ft.ThemeMode.SYSTEM
 
+    def alertMod():
+        datos = DBManager().query("SELECT COUNT(*) AS count FROM dietas AS d INNER JOIN pagos AS p ON p.no_transferencia = d.no_transferencia WHERE d.estado = 'pagado' AND p.fecha_modificada IS NOT NULL AND p.fecha_modificada < DATEADD(DAY, -7, GETDATE());")
 
+        if datos and datos[0]['count'] > 0:
+            # Asegúrate de que el contenido sea un objeto de control, no una cadena
+            load = widget.Modal(
+                title='⚠️ Error',
+                content=ft.Text(f"Tiene {datos[0]['count']} dieta(s) modifica(s) en transito por más de 7 días",size=16),
+                action=[ft.TextButton('Cerrar', on_click=lambda e: page.close(load.dialog))]
+                )
+            page.open(load.dialog)
+    
     def contabilizadas():
         datos = DBManager().get_all_data('vw_dietasContabilizadas')
         rows = []
 
         if not datos:
             return ft.Text('No hay datos para mostrar', size=25, text_align=ft.TextAlign.CENTER)
-        #for p in DBManager().get_all_data('vw_dietasNoPagadas'):
-        #    rows.append(ft.DataRow(cells=[
-        #        ft.DataCell(ft.Text(str(p[0]))),  # Primera columna
-        #       ft.DataCell(ft.Text(str(p[1]))),  # Segunda columna
-        #    ]))
-
-        #return rows
-
-
-    def pagadas():
-        datos = DBManager().query("SELECT * FROM dietas WHERE estado='pagado' ORDER BY fecha_correo DESC")
-        rows = []
-        
-        if not datos:
-            return ft.Text('No hay datos para mostrar', size=25, text_align=ft.TextAlign.CENTER)
 
         for p in datos:
-            fecha = datetime.strptime(str(p['fecha']), "%Y-%m-%d").strftime("%d-%m-%Y")
+            fecha_d = datetime.strptime(str(p['fecha_dieta']), "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y")
+            fecha_p = datetime.strptime(str(p['fecha_transferencia']), "%Y-%m-%d").strftime("%d-%m-%Y")
             importe=f"{p['importe']:.2f}"
             rows.append(ft.DataRow(cells=[
-                ft.DataCell(ft.Text(fecha)),  # Fecha transferencia
-                ft.DataCell(ft.Text(str(p['no_transferencia']))),  # No Transferencia
-                ft.DataCell(ft.Text(importe)),  # Importe
-                ft.DataCell(ft.Text(str(p['cuenta_destino']))),  # Cuenta Destino
-                ft.DataCell(ft.Text(str(p['beneficiario']))),  # Beneficiario
-                ft.DataCell(ft.Text(str(p['operador']))),  # Operador
-            ],on_select_changed=lambda e: show_details(p,'pendiente')
+                ft.DataCell(ft.Text(str(p['dieta']))),
+                ft.DataCell(ft.Text(str(p['br']))),
+                ft.DataCell(ft.Text(importe)),
+                ft.DataCell(ft.Text(str(p['destino']))),
+                ft.DataCell(ft.Text(str(p['beneficiario']))),
+                ft.DataCell(ft.Text(str(p['paga']))),  
+                ft.DataCell(ft.Text(str(p['contabiliza']))),
+                ft.DataCell(ft.Text(str(p['usuario']))),
+                ft.DataCell(ft.Text(fecha_d)),
+                ft.DataCell(ft.Text(fecha_p)),
+            ],on_select_changed=True
+            #],on_select_changed=lambda e: show_details(p,'pendiente')
             ))
 
         return ft.Column(
             [
                 ft.DataTable(
+                    
                     width=page.width,
                     columns=[
-                        ft.DataColumn(ft.Text("Fecha")),
+                        ft.DataColumn(ft.Text("Dieta")),
+                        ft.DataColumn(ft.Text("Transferencia")),
+                        ft.DataColumn(ft.Text("Importe")),
+                        ft.DataColumn(ft.Text("Cuenta")),
+                        ft.DataColumn(ft.Text("Beneficiario")),
+                        ft.DataColumn(ft.Text("Realizado por")),
+                        ft.DataColumn(ft.Text("Contabilizado por")),
+                        ft.DataColumn(ft.Text("Usuario")),
+                        ft.DataColumn(ft.Text("Emitida")),
+                        ft.DataColumn(ft.Text("Pagada")),
+                    ],
+                    rows=rows
+                )
+            ],
+            expand=True,
+            scroll=ft.ScrollMode.AUTO
+        )
+
+    def pagadas():
+        rows = []
+        datos = DBManager().query("SELECT d.fecha AS pagado, p.fecha_modificada AS modificado, d.no_transferencia, d.importe, d.cuenta_destino, d.beneficiario, d.operador FROM dietas AS d INNER JOIN pagos AS p ON p.no_transferencia = d.no_transferencia WHERE d.estado = 'pagado' ORDER BY d.fecha DESC;")
+
+        if not datos:
+            return ft.Text('No hay datos para mostrar', size=25, text_align=ft.TextAlign.CENTER)
+
+        for p in datos:
+            fecha_p = datetime.strptime(str(p['pagado']), "%Y-%m-%d").strftime("%d-%m-%Y")
+
+            #fecha_mod_db = str(p['modificado'])
+            if p['modificado'] is None:
+                fecha_m = "No"
+            else:
+                fecha_m = datetime.strptime(str(p['modificado']), "%Y-%m-%d").strftime("%d-%m-%Y")
+
+            importe=f"{p['importe']:.2f}"
+            rows.append(ft.DataRow(cells=[
+                ft.DataCell(ft.Text(fecha_p)),  # Fecha transferencia
+                ft.DataCell(ft.Text(fecha_m)),  # Fecha transferencia
+                ft.DataCell(ft.Text(str(p['no_transferencia']))),  # No Transferencia
+                ft.DataCell(ft.Text(importe)),  # Importe
+                ft.DataCell(ft.Text(str(p['cuenta_destino']))),  # Cuenta Destino
+                ft.DataCell(ft.Text(str(p['beneficiario']))),  # Beneficiario
+                ft.DataCell(ft.Text(str(p['operador']))),  # Operador
+            ],on_select_changed=True
+            #],on_select_changed=lambda e: show_details(p,'pendiente')
+            ))
+
+        return ft.Column(
+            [
+                ft.DataTable(
+                    
+                    width=page.width,
+                    columns=[
+                        ft.DataColumn(ft.Text("Pagado")),
+                        ft.DataColumn(ft.Text("Modificado")),
                         ft.DataColumn(ft.Text("Transferencia")),
                         ft.DataColumn(ft.Text("Importe")),
                         ft.DataColumn(ft.Text("Cuenta")),
@@ -356,6 +413,7 @@ def main(page:ft.Page):
     #    data=0,
     #)
 
+    alertMod()
     page.add(
         ft.Row(
             [
