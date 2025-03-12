@@ -47,6 +47,9 @@ def sidebar(navigation,update):
                 icon=ft.Icons.ACCESS_TIME,
                 selected_icon=ft.Icons.ACCESS_TIME_FILLED_OUTLINED
             ),ft.NavigationRailDestination(
+                icon=ft.Icons.DIFFERENCE_OUTLINED,
+                selected_icon=ft.Icons.DIFFERENCE
+            ),ft.NavigationRailDestination(
                 icon=ft.Icons.WARNING_AMBER_ROUNDED,
                 selected_icon=ft.Icons.WARNING_ROUNDED
             )

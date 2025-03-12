@@ -12,14 +12,14 @@ def main(page:ft.Page):
     page.theme = ft.Theme(color_scheme_seed=ft.Colors.GREEN)
     page.theme_mode=ft.ThemeMode.SYSTEM
 
-    def alertMod():
-        datos = DBManager().query("SELECT COUNT(*) AS count FROM dietas AS d INNER JOIN pagos AS p ON p.no_transferencia = d.no_transferencia WHERE d.estado = 'pagado' AND p.fecha_modificada IS NOT NULL AND p.fecha_modificada < DATEADD(DAY, -7, GETDATE());")
+    def alertInitial():
+        modif = DBManager().query("SELECT COUNT(*) AS count FROM dietas AS d INNER JOIN pagos AS p ON p.no_transferencia = d.no_transferencia WHERE d.estado = 'pagado' AND p.fecha_modificada IS NOT NULL AND p.fecha_modificada < DATEADD(DAY, -7, GETDATE());")
 
-        if datos and datos[0]['count'] > 0:
+        if modif and modif[0]['count'] > 0:
             # Asegúrate de que el contenido sea un objeto de control, no una cadena
             load = widget.Modal(
                 title='⚠️ Error',
-                content=ft.Text(f"Tiene {datos[0]['count']} dieta(s) modifica(s) en transito por más de 7 días",size=16),
+                content=ft.Text(f"Tiene {modif[0]['count']} dieta(s) modifica(s) en transito por más de 7 días",size=16),
                 action=[ft.TextButton('Cerrar', on_click=lambda e: page.close(load.dialog))]
                 )
             page.open(load.dialog)
@@ -202,7 +202,7 @@ def main(page:ft.Page):
         # Contenedor con scroll
         return ft.Column(
             [
-                ft.Text('Dietas no pagadas',size=28, weight="bold"),
+                ft.Text('Dietas sin constancia de pago',size=28, weight="bold"),
                 ft.Column(
                     [
                         data_table,
@@ -257,18 +257,64 @@ def main(page:ft.Page):
             scroll=ft.ScrollMode.AUTO
         )
 
+    def repetidas():
+        rows = []
+        datos = DBManager().get_all_data('vw_dietasDuplicadas')
+
+        if not datos:
+            return ft.Text()
+
+        for p in datos:
+            # Convertir la cadena a un objeto datetime
+            fecha = datetime.strptime(str(p['fecha']), "%Y-%m-%d").strftime("%d-%m-%Y")
+            importe = f"{p['importe']:.2f}"
+            rows.append(ft.DataRow(cells=[
+                ft.DataCell(ft.Text(str(p['dieta']))),
+                ft.DataCell(ft.Text(str(p['br']))),
+                ft.DataCell(ft.Text(importe)),
+                ft.DataCell(ft.Text(str(p['beneficiario']))),
+                ft.DataCell(ft.Text(str(p['paga']))),
+                ft.DataCell(ft.Text(str(p['estado']))),
+                ft.DataCell(ft.Text(fecha)),
+            ], on_select_changed=True))
+
+        # Crear la tabla
+        data_table = ft.DataTable(
+            width=page.width,
+            columns=[
+                        ft.DataColumn(ft.Text("Dieta")),
+                        ft.DataColumn(ft.Text("Transferencia")),
+                        ft.DataColumn(ft.Text("Importe")),
+                        ft.DataColumn(ft.Text("Destino")),
+                        ft.DataColumn(ft.Text("Realizado por")),
+                        ft.DataColumn(ft.Text("Estado")),
+                        ft.DataColumn(ft.Text("Fecha")),
+                ],
+            rows=rows
+        )
+
+        # Contenedor con scroll
+        return ft.Column(
+            [
+                data_table
+            ],
+            expand=True,
+            scroll=ft.ScrollMode.AUTO,
+        )
+
     # Cards informativas
     def cards():
         pagadTotal=DBManager().query("SELECT COUNT(*) FROM dietas WHERE estado='pagado'")
         pendtTotal=DBManager().query("SELECT COUNT(*) FROM dietas WHERE estado='pendiente'")
         noPayTotal=DBManager().query("SELECT COUNT(*) FROM vw_dietasNoPagadas")
+        repeatTotal=DBManager().query("SELECT COUNT(p.no_dieta) FROM dietas d INNER JOIN pagos p ON p.no_transferencia=d.no_transferencia AND p.anno=YEAR(GETDATE()) INNER JOIN PNT_MEDIASERVER.UNE_2316A_INT.dbo.dietas_finanza df ON df.Id_Doc=p.no_dieta AND df.Ano_Doc=p.anno GROUP BY p.no_dieta HAVING COUNT(*) > 1")
         errorTotal=DBManager().query("SELECT COUNT(*) FROM dietas WHERE estado LIKE 'error%'")
 
         return ft.ResponsiveRow(
             [
                 # total Contabilizados
                 ft.Card(
-                    col=4,
+                    col=3,
                     content=ft.Container(
                         content=ft.Column(
                             [
@@ -281,13 +327,14 @@ def main(page:ft.Page):
                             ]
                         ),
                         width=400,
-                        padding=10,
+                        padding=3,
                     ),
                     color=ft.Colors.GREEN_50
                 ),
 
+                # Pendientes
                 ft.Card(
-                    col=4,
+                    col=3,
                     content=ft.Container(
                         content=ft.Column(
                             [
@@ -300,14 +347,34 @@ def main(page:ft.Page):
                             ]
                         ),
                         width=400,
-                        padding=10,
+                        padding=3
+                    ),
+                    color=ft.Colors.GREEN_50
+                ),
+
+                # Repetidas
+                ft.Card(
+                    col=3,
+                    content=ft.Container(
+                        content=ft.Column(
+                            [
+                                ft.ListTile(
+                                    selected=True,
+                                    selected_tile_color=ft.Colors.GREEN_50,
+                                    leading=ft.Icon(ft.Icons.DIFFERENCE),
+                                    title=ft.Text(f"Repetidas: {repeatTotal[0]['']}",size=20, weight="bold"),
+                                )
+                            ]
+                        ),
+                        width=400,
+                        padding=3,
                     ),
                     color=ft.Colors.GREEN_50
                 ),
 
                 # Errores
                 ft.Card(
-                    col=4,
+                    col=3,
                     content=ft.Container(
                         content=ft.Column(
                             [
@@ -320,7 +387,7 @@ def main(page:ft.Page):
                             ]
                         ),
                         width=400,
-                        padding=10,
+                        padding=3,
                     ),
                     color=ft.Colors.GREEN_50
                 ),
@@ -344,28 +411,35 @@ def main(page:ft.Page):
             1: ft.Column(
                 expand=True,
                 controls=[
-                    ft.Text("Contabilizados", size=30, weight="bold"),
+                    ft.Text("Dietas Contabilizadas", size=30, weight="bold"),
                     contabilizadas()
                 ]
             ),
             2: ft.Column(
                 expand=True,
                 controls=[
-                    ft.Text("Pagados", size=30, weight="bold"),
+                    ft.Text("Dietas Pagadas", size=30, weight="bold"),
                     pagadas()
                 ]
             ),
             3: ft.Column(
                 expand=True,
                 controls=[
-                    ft.Text("Pendientes", size=30, weight="bold"),
+                    ft.Text("Dietas Pendientes", size=30, weight="bold"),
                     pendientes(),
                 ]
             ),
             4: ft.Column(
                 expand=True,
                 controls=[
-                    ft.Text("Errores", size=30, weight="bold"),
+                    ft.Text("Dietas Repetidas", size=30, weight="bold"),
+                    repetidas()
+                ]
+            ),
+            5: ft.Column(
+                expand=True,
+                controls=[
+                    ft.Text("Dietas con Errores", size=30, weight="bold"),
                     errores()
                 ]
             )
@@ -413,7 +487,7 @@ def main(page:ft.Page):
     #    data=0,
     #)
 
-    alertMod()
+    alertInitial()
     page.add(
         ft.Row(
             [
