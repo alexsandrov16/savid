@@ -20,7 +20,7 @@ def app(name):
     app = {
         "name":"SAViD",
         "fullname":"Sistema de Análisis y Verificación de Dietas",
-        "version":"1.2"
+        "version":"1.3"
     }
     return app[name]
 
