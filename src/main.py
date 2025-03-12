@@ -310,6 +310,11 @@ def main(page:ft.Page):
         repeatTotal=DBManager().query("SELECT COUNT(p.no_dieta) FROM dietas d INNER JOIN pagos p ON p.no_transferencia=d.no_transferencia AND p.anno=YEAR(GETDATE()) INNER JOIN PNT_MEDIASERVER.UNE_2316A_INT.dbo.dietas_finanza df ON df.Id_Doc=p.no_dieta AND df.Ano_Doc=p.anno GROUP BY p.no_dieta HAVING COUNT(*) > 1")
         errorTotal=DBManager().query("SELECT COUNT(*) FROM dietas WHERE estado LIKE 'error%'")
 
+        if not repeatTotal:
+            repeatTotal = 0
+        else:
+            repeatTotal = repeatTotal[0]['']
+
         return ft.ResponsiveRow(
             [
                 # total Contabilizados
@@ -362,7 +367,7 @@ def main(page:ft.Page):
                                     selected=True,
                                     selected_tile_color=ft.Colors.GREEN_50,
                                     leading=ft.Icon(ft.Icons.DIFFERENCE),
-                                    title=ft.Text(f"Repetidas: {repeatTotal[0]['']}",size=20, weight="bold"),
+                                    title=ft.Text(f"Repetidas: {repeatTotal}",size=20, weight="bold"),
                                 )
                             ]
                         ),
