@@ -107,6 +107,7 @@ class OutlookClient:
 def sendMailData():
     try:
         OutlookClient().get_emails(outlook('subject'))
+        DBManager().call_sp('sp_LimpiarDuplicados')
         DBManager().call_sp('sp_ActualizaDietasPendientes')
         DBManager().call_sp('sp_ActualizaDietasPagadas')
     except:
