@@ -12,6 +12,7 @@ DATOS DE DIETAS CONTABILIZADAS
 '''
 def contabilizadas(page):
     datos = DBManager().get_all_data('vw_dietasContabilizadas')
+    datos = DBManager().query("SELECT * FROM vw_dietasContabilizadas ORDER BY fecha_dieta DESC, dieta desc")
     rows = []
 
     if not datos:
@@ -277,7 +278,7 @@ DATOS DE DIETAS PAGADAS
 '''
 def pagadas(page):
     rows = []
-    datos = DBManager().query("SELECT p.no_dieta as dieta, d.fecha AS pagado, p.fecha_modificada AS modificado, d.no_transferencia, d.importe, d.cuenta_destino, d.beneficiario, d.operador FROM dietas AS d INNER JOIN pagos AS p ON p.no_transferencia = d.no_transferencia WHERE d.estado = 'pagado' ORDER BY d.fecha DESC;")
+    datos = DBManager().query("SELECT p.no_dieta as dieta, d.fecha AS pagado, p.fecha_modificada AS modificado, d.no_transferencia, d.importe, d.cuenta_destino, d.beneficiario, d.operador FROM dietas AS d INNER JOIN pagos AS p ON p.no_transferencia = d.no_transferencia WHERE d.estado = 'pagado' ORDER BY d.fecha DESC, dieta DESC;")
 
     if not datos:
         return dataNotFound()
@@ -772,7 +773,7 @@ DATOS DE DIETAS NO PAGADAS
 '''
 def noPagadas(page):
     rows = []
-    datos = DBManager().get_all_data('vw_dietasNoPagadas')
+    datos = DBManager().query("SELECT * FROM vw_dietasNoPagadas ORDER BY fecha DESC, dieta DESC")
 
     if not datos:
         return dataNotFound()
