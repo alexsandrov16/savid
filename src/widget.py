@@ -52,6 +52,9 @@ def sidebar(navigation,update):
             ),ft.NavigationRailDestination(
                 icon=ft.Icons.WARNING_AMBER_ROUNDED,
                 selected_icon=ft.Icons.WARNING_ROUNDED
+            #),ft.NavigationRailDestination(
+            #    icon=ft.Icons.PICTURE_AS_PDF_OUTLINED,
+            #    selected_icon=ft.Icons.PICTURE_AS_PDF_ROUNDED
             )
         ],
         on_change=lambda e: navigation(e)

@@ -2,8 +2,8 @@ import flet as ft
 import config,time,widget
 from outlook import sendMailData
 from database import DBManager
-from datetime import datetime
 import getdata
+import datepiker
 
 def main(page:ft.Page):
     page.title = f"{config.app('name')} v{config.app('version')}"
@@ -170,7 +170,18 @@ def main(page:ft.Page):
                     ft.Text("Dietas con Errores", size=30, weight="bold"),
                     getdata.errores(page)
                 ]
-            )
+            ),
+            #6: ft.Column(
+            #    expand=True,
+            #    controls=[
+            #        ft.Text("Reportes", size=30, weight="bold"),
+            #        ft.Row(
+            #            [
+            #                datepiker.datePiker(page)
+            #            ]
+            #        )
+            #    ]
+            #)
         }
         return contents[index]
 
