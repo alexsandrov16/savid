@@ -1,21 +1,33 @@
-MIT License
+LICENCIA DE VISUALIZACIÓN Y MODIFICACIÓN
+
+Esta Licencia de Visualización y Modificación ("Licencia") regula el uso, visualización y modificación del código fuente proporcionado en este repositorio. Al acceder, visualizar o modificar el código fuente, usted acepta los términos y condiciones de esta Licencia.
+
+1. DEFINICIONES
+   - "Código Fuente": El código fuente proporcionado en este repositorio.
+   - "Usted": Cualquier persona o entidad que accede, visualiza o modifica el Código Fuente.
+
+2. PERMISOS
+   - Usted tiene permiso para visualizar el Código Fuente.
+   - Usted tiene permiso para modificar el Código Fuente para fines educativos o de investigación.
+
+3. RESTRICCIONES
+   - Usted NO tiene permiso para usar el Código Fuente en cualquier aplicación, producto o servicio sin el consentimiento expreso y escrito del propietario del copyright.
+   - Usted NO tiene permiso para distribuir, copiar, sublicenciar, transferir o hacer disponible el Código Fuente a terceros, ya sea en su forma original o modificada.
+
+4. EXENCION DE GARANTÍA
+   - El Código Fuente se proporciona "TAL CUAL", SIN GARANTÍAS DE NINGÚN TIPO, ya sean expresas o implícitas, incluidas, entre otras, las garantías de comerciabilidad, idoneidad para un propósito particular y no infracción.
+
+5. LIMITACIÓN DE RESPONSABILIDAD
+   - En ningún caso el propietario del copyright será responsable por cualquier daño directo, indirecto, incidental, especial, consecuente o punitivo, incluidos, entre otros, daños por pérdida de beneficios, pérdida de datos, interrupción del negocio o cualquier otro daño o pérdida, ya sea en una acción de contrato, negligencia u otra acción de responsabilidad, que surja del uso o la imposibilidad de usar el Código Fuente, incluso si el propietario del copyright ha sido advertido de la posibilidad de tales daños.
+
+6. TÉRMINO
+   - Esta Licencia es efectiva hasta que sea terminada por el propietario del copyright. El propietario del copyright puede terminar esta Licencia en cualquier momento sin previo aviso.
+
+7. LEY APLICABLE
+   - Esta Licencia se regirá e interpretará de acuerdo con las leyes del país del propietario del copyright.
+
+8. CONTACTO
+   - Para cualquier consulta o solicitud de permiso adicional, póngase en contacto con [Nombre del Propietario del Copyright] en [Correo Electrónico del Propietario del Copyright].
+
 
 Copyright (c) 2025 Al3x5
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
